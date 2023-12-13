@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Event Management</h1>
+
+    <div id="eventsList">
+        <!-- Display events here -->
+    </div>
+
+    <form id="eventForm">
+        <label for="eventName">Event Name:</label>
+        <input type="text" id="eventName" required>
+        <button type="button" onclick="createEvent()">Create Event</button>
+    </form>
+
+    <script>
+        // Function to fetch all events
+        async function fetchEvents() {
+            const response = await fetch('/all-event');
+            const events = await response.json();
+            const eventsList = document.getElementById('eventsList');
+            eventsList.innerHTML = '<h2>All Events</h2>';
+            
+            events.forEach((event, index) => {
+                const eventDiv = document.createElement('div');
+                eventDiv.innerHTML = `<p>${event} <button onclick="updateEvent(${index})">Update</button> <button onclick="deleteEvent(${index})">Delete</button></p>`;
+                eventsList.appendChild(eventDiv);
+            });
+        }
+
+        // Function to create a new event
+        async function createEvent() {
+            console.log('Trying to create an event');
+            const eventName = document.getElementById('eventName').value;
+            const response = await fetch('/create-event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ event: eventName }),
+            });
+            const createdEvent = await response.json();
+            console.log('Event created:', createdEvent);
+            fetchEvents(); // Refresh the events list after creating a new event
+        }
+
+        // Function to update an existing event
+        async function updateEvent(index) {
+            const eventName = prompt('Enter updated event name:');
+            if (eventName !== null) {
+                const response = await fetch('/update-event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ event: eventName, index: index }),
+                });
+                const updatedEvent = await response.json().catch(error => ({ error }));
+                
+                if (updatedEvent.error) {
+                    console.error('Error updating event:', updatedEvent.error);
+                } else {
+                    console.log('Event updated:', updatedEvent);
+                    fetchEvents(); // Refresh the events list after updating an event
+                }
+            }
+        }
+
+        // Function to delete an existing event
+        async function deleteEvent(index) {
+            const response = await fetch('/delete-event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ index: index }),
+            });
+            const result = await response.json();
+            console.log(result.message);
+            fetchEvents(); // Refresh the events list after deleting an event
+        }
+
+        // Initial fetch to populate events list
+        fetchEvents();
+    </script>
+ <script src="index.js"></script>
+</body>
+</html>
+

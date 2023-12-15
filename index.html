@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Management</title>
+    <title>Digital Diary Log</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Event Management</h1>
+    <h1>Digital Diary Log</h1>
 
     <div id="eventsList">
-        <!-- Display events here -->
+     
     </div>
 
     <form id="eventForm">
-        <label for="eventName">Event Name:</label>
+        <label for="eventName">Entry Name:</label>
         <input type="text" id="eventName" required>
-        <button type="button" onclick="createEvent()">Create Event</button>
+        <button type="button" onclick="createEvent()">Log Entry</button>
     </form>
-
+    <script src="index.js"></script>
     <script>
-        // Function to fetch all events
+      
         async function fetchEvents() {
             const response = await fetch('/all-event');
             const events = await response.json();
@@ -34,10 +34,9 @@
                 eventsList.appendChild(eventDiv);
             });
         }
-
+    
         // Function to create a new event
         async function createEvent() {
-            console.log('Trying to create an event');
             const eventName = document.getElementById('eventName').value;
             const response = await fetch('/create-event', {
                 method: 'POST',
@@ -48,10 +47,10 @@
             });
             const createdEvent = await response.json();
             console.log('Event created:', createdEvent);
-            fetchEvents(); // Refresh the events list after creating a new event
+            fetchEvents(); 
         }
-
-        // Function to update an existing event
+    
+        
         async function updateEvent(index) {
             const eventName = prompt('Enter updated event name:');
             if (eventName !== null) {
@@ -68,12 +67,12 @@
                     console.error('Error updating event:', updatedEvent.error);
                 } else {
                     console.log('Event updated:', updatedEvent);
-                    fetchEvents(); // Refresh the events list after updating an event
+                    fetchEvents(); 
                 }
             }
         }
-
-        // Function to delete an existing event
+    
+        
         async function deleteEvent(index) {
             const response = await fetch('/delete-event', {
                 method: 'POST',
@@ -84,13 +83,13 @@
             });
             const result = await response.json();
             console.log(result.message);
-            fetchEvents(); // Refresh the events list after deleting an event
+            fetchEvents(); 
         }
-
-        // Initial fetch to populate events list
+    
+        
         fetchEvents();
     </script>
- <script src="index.js"></script>
+
 </body>
 </html>
 
